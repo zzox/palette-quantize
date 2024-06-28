@@ -35,9 +35,7 @@ const findColor = (r, g, b, list) => {
 
 fs.createReadStream(fileIn)
   .pipe(new PNG({ filterType: 4 }))
-  .on("parsed", function () {
-    let pixels = 0
-
+  .on('parsed', function () {
     console.time('recolored')
 
     for (var y = 0; y < this.height; y++) {

@@ -1,6 +1,8 @@
 const fs = require('fs')
 const { PNG } = require('pngjs')
 
+const colorAllAlpha = false
+
 const paletteName = process.argv[2]
 const fileIn = process.argv[3]
 const fileOut = process.argv[4]
@@ -12,7 +14,7 @@ if (!paletteName || !fileIn || !fileOut) {
 const paletteFile = fs.readFileSync(paletteName, 'utf8')
 const fileLines = paletteFile.split('\n')
 if (fileLines[0] !== 'GIMP Palette') {
-  throw new Error('Is this a Gimp Palette?')
+  console.error('Is this a Gimp Palette?')
 }
 
 const colors = fileLines
@@ -42,11 +44,16 @@ fs.createReadStream(fileIn)
       for (var x = 0; x < this.width; x++) {
         var idx = (this.width * y + x) << 2
 
-        if (this.data[idx + 3] !== 0) {
+        if (this.data[idx + 3] === 255 || colorAllAlpha) {
           const [r, g, b] = findColor(this.data[idx], this.data[idx + 1], this.data[idx + 2], colors)
           this.data[idx] = r
           this.data[idx + 1] = g
           this.data[idx + 2] = b
+        } else {
+            this.data[idx] = 0
+            this.data[idx + 1] = 0
+            this.data[idx + 2] = 0
+            this.data[idx + 3] = 0
         }
       }
     }
